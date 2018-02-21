@@ -1,0 +1,57 @@
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.23/p5.js"></script>
+	<script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.23/addons/p5.dom.js"></script>
+	<script language="javascript" type="text/javascript" src="sketch.js"></script>
+<style>
+	body {
+		padding: 0;
+		margin: 0;
+		/*background-color: #34495e;*/
+		background-color: black;
+
+	}
+</style>
+</head>
+
+<body oncontextmenu="return false;">
+	<div id="left">
+		<input type="image" id = "SELECT" src="icons/refresh.svg" onclick='clearCanvas()' />
+		<br>
+		<!--<input type="image" id = "DROPPER" src="icons/dropper.svg" onclick='changeTool("DROPPER")' />-->
+		<!--<br>-->
+		<input type="image" id = "PENCIL" src="icons/pencil.svg" onclick='changeTool("PENCIL")' />
+		<br>
+		<input type="image" id = "ERASER" src="icons/eraser.svg" onclick='changeTool("ERASER")' />
+		<br>
+		<input type="image" id = "SPRAY" src="icons/spray.svg" onclick='changeTool("SPRAY")' />
+		<br>
+		<input type="image" id = "RECTANGLE" src="icons/rectangle.svg" onclick='changeTool("RECTANGLE")' />
+		<br>
+		<input type="image" id = "TRIANGLE" src="icons/triangle.svg" onclick='changeTool("TRIANGLE")' />
+		<br>
+		<!--<input type="image" id = "ELLIPSE" src="icons/ellipse.svg" onclick='changeTool("ELLIPSE")' />-->
+		<!--<br>-->
+		<input type="image" id = "LINE" src="icons/line.svg" onclick='changeTool("LINE")' />
+		<br>
+        <input type="image" id = "BEZIER" src="icons/bezier.svg" onclick='changeTool("BEZIER")' />
+		<br>
+		<input type="image" id = "GRID" src="icons/grid.svg" onclick='changeGridlines()' />
+		<br>
+		<input type="image" id = "SAVE" src="icons/save.svg" onclick='savePng()' />
+		<br>
+		<br>
+		<br>
+		<input type="image" id = "img1" src="icons/t9_s.png" onclick='img_1()' />
+		<br>
+		<input type="image" id = "img2" src="icons/euclid1.png" onclick='img_2()' />
+		<br>
+		<input type="image" id = "img3" src="icons/euclid2.png" onclick='img_3()' />
+	</div>
+	<div id="mousePos"></div>
+</body>
+
+</html>
