@@ -1,0 +1,116 @@
+% ******************************************************************************
+% File name: Packages.tex
+% Title: Preamble material to siplify latex code
+% Subject: Commonly used packages to simplify code
+%
+% Created: July 6, 2010
+% Original Issue: 1
+% Last Edited: July 14, 2017
+% Latest Rev. #: 2
+%
+% Ref. Docs.:
+%
+% Revision Notes:
+% Rev 2 (07/14/17 by JZB)
+% Rev
+% Rev.1 (07/06/10 by JB) Original issue
+% Use with \input command from the main tex file.
+% ******************************************************************************
+
+\usepackage{color} % Enables use of color
+
+\usepackage{listings} % Enables including source code with automatic
+                      % syntax higlighting.
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{ %
+  keywordstyle=\color{blue},          % keyword style
+  commentstyle=\color{dkgreen},       % comment style
+  stringstyle=\color{mauve},         % string literal style
+  tabsize=4,
+  linewidth=\textwidth,
+  breaklines=true,
+  breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+  numbers=left,
+  stepnumber=1,
+  basicstyle=\small,
+  % caption={\lstname},
+  % title=\lstname,
+}
+
+\usepackage[nottoc]{tocbibind} % Places bibliography, index, list of figures, and list of tables into TOC
+
+\usepackage{algorithmic} % Enables algorithmic typesetting
+
+\usepackage{verbatim} % Enables usage of quoted text, i.e., computer code.
+
+\usepackage{graphicx}
+\usepackage{subcaption}
+\captionsetup[table]{textfont=it,position=top}
+
+% Using this together with subfig requires adjustments that I don't
+% have time to study.
+% \usepackage[justification=centering]{caption}[2007/12/23]
+\usepackage[font={small,bf}, justification={centering}]{caption}
+
+%\usepackage{pdfpages} % Enables including pages from pdf documents, must use pdflatex
+
+% Formating of tables
+\usepackage{booktabs} % better layout for tables
+\usepackage{tabularx} % adds stretching of table columns to fill space
+\renewcommand{\arraystretch}{1.5} % adds spacing to table rows
+
+% % Page layout and header/footer
+% % \usepackage{fullpage} % Uses the page with reduced margins ~1in all around
+% \usepackage{fancyhdr} % Configurable headers and footers
+% \setlength{\headheight}{2ex} % Prevents a warning from Latex
+% \pagestyle{fancy} % part of the fancyhrd preamble
+%
+% \usepackage{currfile} % Adds file name and dir to available variables
+%                   % (used in header)
+
+\usepackage{setspace} % Adds precise control of paragraph spacing
+                      % (used here to format Proprieatry notice)
+
+\usepackage{lastpage} % Adds total page count (used for Page n of N)
+
+% Adding cross references to a pdf file (does not work act in draft mode)
+% \usepackage[dvipdfm,hidelinks]{hyperref} % option supports dvi->pdf route
+% \usepackage{hyperref} % uses outlines for links, the default outline color is red.
+\usepackage[hidelinks]{hyperref} % hides the outlines, but keeps the links active
+
+\usepackage[acronym,toc,nonumberlist,nopostdot,nogroupskip]{glossaries} % Allows for list of acronyms
+% \newacronym[longplural=Frames per Second]{fpsLabel}{FPS}{Frame per Second}
+\newacronym{acr:PDF}{PDF}{Probability Density Function}
+\newacronym{acr:POA}{POA}{Plane of Array}
+\newacronym{acr:PSLF}{PSLF}{Positive Sequence Load Flow - GE }
+\newacronym{acr:PGnE}{PG\&E}{Pacific Gas and Electric Company}
+\newacronym{acr:PV}{PV}{photovoltaic}
+\newacronym{acr:NREL}{NREL}{National Renewable Energy Laboratory}
+\newacronym{acr:WECC}{WECC}{Western Electric Coordinating Council}
+\newacronym{acr:DG}{DG}{distributed generation}
+\newacronym{acr:GIS}{GIS}{geographic information system}
+
+% Settings for TOC
+% \usepackage[nottoc,chapter]{tocbibind} % Places bibliography, index, list of figures, and list of tables into TOC
+% \settocbibname{References}
+% \renewcommand{\bibname}{References} %
+
+% \renewcommand{\contentsname}{Table of Contents} %
+
+% \pagenumbering{roman} % writes page numbers in roman (not arabic) numerals
+
+%\linespread{1.6} % Sets line spacing to double (crude)
+\usepackage{setspace} % line spacing to double, refined
+\singlespacing
+%\onehalfspacing
+%\doublespacing
+% \setstretch{1.1} % use to set a custom one
+
+\usepackage{amsmath}
+
+\usepackage{enumitem} % allows style definition for lists
+
+% \usepackage[margin=1in]{geometry}

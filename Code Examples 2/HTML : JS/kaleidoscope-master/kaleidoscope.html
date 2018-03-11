@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
+<style type="text/css">
+BODY {
+  font-family: arial, sans-serif;
+}
+</style>
+<script type="text/javascript" src="kaleidoscope.js"></script>
+<script type="text/javascript">
+
+window.onload = function() {
+  setup('cv1', {
+    globalCompositeOperation: 'lighter'
+  });
+  setup('cv2', {
+    numParticles: 55,
+    rotScreen: false,
+    shape: 'square'
+  });
+}
+
+var setup = function(canvasId, opts) {
+  var ctx = document.getElementById(canvasId).getContext('2d');
+  var imageSrcList = ctx.canvas.innerHTML.
+    replace(/^\s+|\s+$/g,'').split(/\s+/g);
+  var ks = kaleidoscope(ctx, imageSrcList, opts);
+  var normalSize = function() {
+    return { width: 400, height: 400 };
+  };
+  var fullScreen = function() {
+    return {
+      width: window.innerWidth,
+      height: window.innerHeight
+    };
+  };
+  ks.getSize = normalSize;
+  ctx.canvas.addEventListener('mousedown', function(event) {
+    event.preventDefault();
+  });
+  ctx.canvas.addEventListener('dblclick', function(event) {
+    if (ks.getSize == normalSize) {
+      ks.getSize = fullScreen;
+      ctx.canvas.style.position = 'absolute';
+      ctx.canvas.style.left = '0px';
+      ctx.canvas.style.top = '0px';
+    } else {
+      ks.getSize = normalSize;
+      ctx.canvas.style.position = 'static';
+    }
+  });
+};
+
+</script>
+<title>kaleidoscope</title>
+</head>
+<body>
+<h1>kaleidoscope</h1>
+<p>
+double-click to full screen mode.
+</p>
+
+<canvas id="cv1">
+assets/b.png
+assets/c.png
+assets/g.png
+assets/m.png
+assets/o.png
+assets/p.png
+assets/r.png
+assets/y.png
+</canvas>
+
+<canvas id="cv2">
+assets/b.png
+assets/c.png
+assets/g.png
+assets/m.png
+assets/o.png
+assets/p.png
+assets/r.png
+assets/y.png
+</canvas>
+
+</body>
+</html>

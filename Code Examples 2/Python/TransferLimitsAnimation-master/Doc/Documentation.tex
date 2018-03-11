@@ -1,0 +1,181 @@
+% ******************************************************************************
+% File name: Documentation.tex
+% Title:   Documentation for Transfer Limits Animation
+% Subject: Documentation based on referencing portions of listing
+%
+% Created: June 11, 2017
+% Original Issue: Pending
+% Last Edited: June 11, 2017
+% Latest Rev. #: 0
+%
+% Ref. Docs.:
+%
+% Revision Notes:
+% Rev.0 (June 11/2017 by JZB) Template
+% ******************************************************************************
+%
+%        1         2         3         4         5         6         7         8
+% 345678901234567890123456789012345678901234567890123456789012345678901234567890
+%
+
+\documentclass[12pt]{report}
+
+% List of all packages is included here
+\input{Packages.tex}
+
+\renewcommand\lstlistlistingname{List of Listings}
+
+\makeindex
+
+\title{Transfer Limits Animation}
+\author{Jovan Bebi\'{c}\\[0.5ex]
+        Marija Bebi\'{c}}
+
+\begin{document}
+\pagenumbering{roman} % Changes page numbering to roman
+\maketitle
+
+\begin{abstract}
+This document is a LaTeX template for creating code documentation. It is typeset
+\emph{report} document class, which means that it has chapters and sections.
+The main purpose of the document is to illustrate it's use of figures and listings,
+but it also showcases cross referencing bibliography entries, etc.
+\end{abstract}
+
+\pagenumbering{arabic} % Returns to arabic page numbering
+\section*{Revision Notes}
+\begin{tabularx}{\textwidth}{|p{1in}|l|c|X|}
+\hline
+Authors & Date & Rev & Notes \\
+\hline
+JZB & Jun 11-14, 2017 & Draft & Template for use by others \\
+\hline
+\end{tabularx}
+
+\tableofcontents
+\listoffigures
+\addcontentsline{toc}{chapter}{\lstlistlistingname}{\lstlistoflistings}
+
+\doublespacing
+\chapter{Introduction}
+\label{ch:intro}
+This is a template LaTeX file useful when preparing software documentation. It
+is compiled with pdflatex using included DOS batch file called runAll.bat. In
+the following report, we are documenting the process of creating a graph needed
+for a presentation.
+\section{Including and captioning figures}
+\label{sec:figures}
+The first step was to create the circle that would be the basis of the graph.
+This is done in the following lines of code:
+\singlespacing
+\lstinputlisting[language=python,caption={\lstname},label=lst:2, linerange={395-397}]{code/base_frame_v1.py}
+\doublespacing
+
+Theta(th) is defined by a range from 0 to 2pi, with a step of pi/100. The smaller
+the step, the more accurate and defined the circle is.
+
+For the purpose of this graph, five areas were created to represent different
+points throughout the circle. This is done in the following lines of code:
+\singlespacing
+\lstinputlisting[language=python,caption={\lstname},label=lst:3, linerange={296-301}]{code/base_frame_v1.py}
+\doublespacing
+
+The reference points, marked in gray, on the circle were created by creating an theta range from
+0 to 2pi, with a step of 2pi divided by the area array. This separates the reference
+points by the area array evenly.
+
+The points on the graph were plotted using the following lines of code:
+\singlespacing
+\lstinputlisting[language=python,caption={\lstname},label=lst:4, linerange={312-316}]{code/base_frame_v1.py}
+\doublespacing
+
+To create the red and blue points on the circle, we needed to first determine if
+the vector from i to j passes to the right or left relative to center, looking
+from each gray point individually.
+
+To distribute the red points, we first needed to find the scalar product of the
+vector from point i to j, and from point i to the origin. This is done in the
+following lines of code:
+
+\singlespacing
+\lstinputlisting[language=python,caption={\lstname},label=lst:4, linerange={355-359}]{code/base_frame_v2.py}
+\doublespacing
+
+In the scalar product of these two vectors, the i and j components equal zero; the
+only component left is k, which is calculated as follows; if the k component was
+less than zero, it was added to the left tally, and if greater than zero, it was
+added to the right tally. This is shown in the following lines of code:
+
+\singlespacing
+\lstinputlisting[language=python,caption={\lstname},label=lst:5, linerange={364-365}]{code/base_frame_v2.py}
+\doublespacing
+\singlespacing
+\lstinputlisting[language=python,caption={\lstname},label=lst:6, linerange={373-380}]{code/base_frame_v2.py}
+\doublespacing
+
+To plot the points as (x,y) coordinates, we followed the same formula for the gray points.
+However, the theta values were slightly different. For the blue points, the left tally
+was subtracted, and for the red points, the right tally was added. These values were
+multipled by our conversion factor flowscale, represented as rad/MW, to keep the angles
+in radians. This is shown in the following lines of code, for the blue and red points, respectively:
+
+\singlespacing
+\lstinputlisting[language=python,caption={\lstname},label=lst:7, linerange={387-390}]{code/base_frame_v2.py}
+\doublespacing
+
+To plot the arcs between the gray and blue/red points, we used a 4 point Bezier curve with point 1
+being the gray point, point 2 and 3 being the 'golden section' of the curve, and point 4 being the
+red or blue we were trying to connect to. This is shown as follows:
+
+\singlespacing
+\lstinputlisting[language=python,caption={\lstname},label=lst:8, linerange={87-107}]{code/base_frame_v2.py}
+\doublespacing
+
+
+Because the right and left tallies were organized in arrays and not points,
+
+This plots the gray points shown in the following figure: Fig.~\ref{fig:AreaMarkers}.
+
+\begin{figure*}%[t]
+  \centering %
+  \includegraphics[scale=1.0, page=1]{visuals/Plots1}
+  \caption[Area markers] {Area markers arranged on a circle} %
+  \label{fig:AreaMarkers}
+\end{figure*}
+
+\clearpage
+
+\section{Including and annotating code}
+\label{sec:code}
+
+\singlespacing
+\lstinputlisting[language=python,caption={\lstname},label=lst:1, linerange={85-95}]{code/base_frame_v0.py}
+\doublespacing
+
+\section{Other formatting}
+We saw in \ref{sec:figures} how to include figures.
+\singlespacing
+\begin{enumerate}
+  \item Preprocess historic AMI data to enable study based on actual measurements.
+  \item Execute OpenDSS in snapshot mode to review voltage contours at a wide
+        range of operating conditions.
+  \item Review the resulting patterns and place OpenDSS \emph{monitors} at
+        nodes that experience greatest voltage change.
+  \item Execute OpenDSS in temporal mode to collect temporal voltage recordings
+        at monitored nodes.
+  \item Review voltage histograms at monitored buses to quantify the frequency
+        and magnitude of voltage excursions.
+\end{enumerate}
+\doublespacing
+
+In the following sections, we briefly describe the tool-chains that facilitate
+this process.
+
+\clearpage
+
+\bibliographystyle{IEEEtran} % "plain" is another option
+% \bibliography{Ph2report_EC}
+
+\clearpage
+
+\end{document}
