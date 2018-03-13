@@ -1,14 +1,12 @@
 import ddf.minim.analysis.*;
 import ddf.minim.*;
 
-
 Minim       minim;
 AudioInput  lineIn;
 FFT         myFFT;
 
 float       colorPlane[][][] = new float[256][256][3];
 float       deltaMap[][][] = new float[800][800][2];
-
 
 float       bandFocus, intensity, bandSkew;
 boolean     flipSpectrum, glowEffect, gray;
@@ -19,99 +17,31 @@ String      oldDisplay;
 
 PImage      frameBuffer;
 
-
-
-
 int xPix = 800, yPix = 800, nMirrors = 5;
-
 
 PixelPoint[][] pointSet = new PixelPoint[xPix][yPix];
 MirrorWall[]   reflections = new MirrorWall[nMirrors];
 
 PImage photo;
 
-void setup()
-{
+void setup(){
   int x, y, n, m;
   
   byte[] dMapFile;
   
-  /*
-  for(y=0;y<yPix;y++)
-  {
-    for(x=0;x<xPix;x++)
-    {
-      pointSet[x][y] = new PixelPoint(0, 0, (x-(xPix/2 - 0.5))/260.0, (y-(yPix/2 - 0.5))/260.0);
-    }
-  }
-  
-  for(y=0;y<nMirrors;y++)
-  {
-    reflections[y] = new MirrorWall(100.0, y*2.0*PI/nMirrors);
-  }
-  */
-  
   size(800,850);
   frameRate(30);
   background(0);
-  //colorMode(HSB, 255);
-  
- /*
-  println("Generating Delta Map...");
-  
-  for(n=0;n<160;n++)
-  {
-    for(y=0;y<yPix;y++)
-    {
-      for(x=0;x<xPix;x++)
-      {   
-  
-          pointSet[x][y].move();
-        for(m=0;m<nMirrors;m++)
-          pointSet[x][y].checkMirror(reflections[m]);
-      }
-    }
-    if((n%5)==0)
-      print(".");
-  }
-  println("done.");
-  for(y=0;y<yPix;y++)
-  {
-    for(x=0;x<xPix;x++)
-    {   
-      deltaMap[x][y][0] = pointSet[x][y].x + 127.5;
-      deltaMap[x][y][1] = pointSet[x][y].y + 127.5;
-      
-      int idx = (y*800+x)*8;
-      int tmp = floor(deltaMap[x][y][0] * 65536); 
-      dMapFile[idx] = byte((tmp >> 24) & 0xFF);
-      dMapFile[idx+1] = byte((tmp >> 16) & 0xFF);
-      dMapFile[idx+2] = byte((tmp >> 8) & 0xFF);
-      dMapFile[idx+3] = byte((tmp) & 0xFF);
-      
-      tmp = floor(deltaMap[x][y][1] * 65536); 
-      dMapFile[idx+4] = byte((tmp >> 24) & 0xFF);
-      dMapFile[idx+5] = byte((tmp >> 16) & 0xFF);
-      dMapFile[idx+6] = byte((tmp >> 8) & 0xFF);
-      dMapFile[idx+7] = byte((tmp) & 0xFF);
-      
-    }
-  }
-  println("floated.");
-  saveBytes("mirror5.dat", dMapFile);
-  */
   
   dMapFile = loadBytes("mirror5.dat"); //There are other sample delta maps in the folder. Try them!
-  if (dMapFile == null)
-  {
+  
+  if (dMapFile == null) {
     println("Oh shoot. Can't load the delta map!");
     exit();
   }
   
-  for(y=0;y<yPix;y++)
-  {
-    for(x=0;x<xPix;x++)
-    {   
+  for(y=0;y<yPix;y++) {
+    for(x=0;x<xPix;x++) {   
       int tmp;
       int idx = (y*800+x)*8;
 
@@ -140,39 +70,25 @@ void setup()
       tmp |= dMapFile[idx] & 0xFF;
       
       deltaMap[x][y][1] = tmp/65536.0; 
-      
-      
     }
   }
-  
-  
-  
   frameBuffer = createImage(width, height - 50, RGB);
-
   
   thread("spectrumThread");
-
 }
 
-void draw()
-{
-  int x, y, m;
-  int yo = (height - 50 - yPix)/2;
-  int xo = (width - xPix)/2;
-  int j;
+void draw() {
+  //int x, y, m;
+  //int yo = (height - 50 - yPix)/2;
+  //int xo = (width - xPix)/2;
+  //int j;
   String display;
-  //background(0);
   
   image(frameBuffer, 0, 0);
 
-  
-
-  
-  
   display = "Focus: " + nf(bandFocus, 2, 2) + "   Intensity: " + nf(intensity, 2, 2);
   display = display + "   Band Skew: "+ nf(bandSkew, 2, 2) + "\n";
-  switch (symmetry)
-  {
+  switch (symmetry){
     case 0:
       display = display + "No ";
       break;
@@ -212,37 +128,30 @@ void draw()
   }
   display = display + "Symmetry.   Flip: ";
   
-  if(flipSpectrum)
-  {
+  if(flipSpectrum) {
     display = display + "On";
   }
-  else
-  {
+  else {
     display = display + "Off";
   }
   
   display = display + "   Glow: ";
-  if(glowEffect)
-  {
+  if(glowEffect) {
     display = display + "On";
   }
-  else
-  {
+  else {
     display = display + "Off";
   }
 
   display = display + "   Gray: ";
-  if(gray)
-  {
+  if(gray) {
     display = display + "On";
   }
-  else
-  {
+  else{
     display = display + "Off";
   }  
   
-  if (!display.equals(oldDisplay))
-  {
+  if (!display.equals(oldDisplay)) {
     fill(0,0,0);
     noStroke();
     rect(0, yPix, xPix, 50);
@@ -257,18 +166,13 @@ void draw()
 
 void spectrumLine(float[] intensities, float x1, float y1, float x2, float y2)
 {
-  int j;
-  
-  
-  for(j=0;j<283;j++)
-  {
+  for(int j=0;j<283;j++) {
     float xx = (x1*(282 - j) + x2*j)/282;
     float yy = (y1*(282 - j) + y2*j)/282;
     int px = floor(xx);
     int py = floor(yy);
     
-    if ((px < 0) || (px > 255) || (py < 0) || (py > 255))
-      continue;
+    if ((px < 0) || (px > 255) || (py < 0) || (py > 255)) continue;
     
     float highX = xx - floor(xx);
     float lowX = 1.0 - highX;
@@ -278,20 +182,17 @@ void spectrumLine(float[] intensities, float x1, float y1, float x2, float y2)
     colorPlane[px][py][0] += wavelengthTable[j+42][1]*intensities[j]*lowX*lowY;
     colorPlane[px][py][1] += wavelengthTable[j+42][2]*intensities[j]*lowX*lowY;
     colorPlane[px][py][2] += wavelengthTable[j+42][3]*intensities[j]*lowX*lowY;
-    if (xx < 255)
-    {
+    if (xx < 255) {
       colorPlane[px+1][py][0] += wavelengthTable[j+42][1]*intensities[j]*highX*lowY;
       colorPlane[px+1][py][1] += wavelengthTable[j+42][2]*intensities[j]*highX*lowY;
       colorPlane[px+1][py][2] += wavelengthTable[j+42][3]*intensities[j]*highX*lowY;
     }
-    if (yy < 255)
-    {
+    if (yy < 255) {
       colorPlane[px][py+1][0] += wavelengthTable[j+42][1]*intensities[j]*lowX*highY;
       colorPlane[px][py+1][1] += wavelengthTable[j+42][2]*intensities[j]*lowX*highY;
       colorPlane[px][py+1][2] += wavelengthTable[j+42][3]*intensities[j]*lowX*highY;
     }
-    if ((xx < 255) && (yy < 255))
-    {
+    if ((xx < 255) && (yy < 255)) {
       colorPlane[px+1][py+1][0] += wavelengthTable[j+42][1]*intensities[j]*highX*highY;
       colorPlane[px+1][py+1][1] += wavelengthTable[j+42][2]*intensities[j]*highX*highY;
       colorPlane[px+1][py+1][2] += wavelengthTable[j+42][3]*intensities[j]*highX*highY;
@@ -300,8 +201,7 @@ void spectrumLine(float[] intensities, float x1, float y1, float x2, float y2)
 }
 
 
-color PlanePixel(float x, float y)
-{
+color PlanePixel(float x, float y) {
   if ((x > 255) || (x < 0) || (y > 255) || (y < 0))
     return color(0);
     
@@ -349,24 +249,19 @@ color PlanePixel(float x, float y)
 
 void dimPlane()
 {
-  int x,y;
+  //int x,y;
   
-  for(x=0;x<256;x++)
-  {
-    for(y=0;y<256;y++)
-    {
+  for(int x=0;x<256;x++) {
+    for(int y=0;y<256;y++) {
       colorPlane[x][y][0] *= 0.95;
       colorPlane[x][y][1] *= 0.95;
       colorPlane[x][y][2] *= 0.95;
     }
   }
 
-  if (gray)
-  {
-    for(x=0;x<256;x++)
-    {
-      for(y=0;y<256;y++)
-      {
+  if (gray) {
+    for(int x=0;x<256;x++) {
+      for(int y=0;y<256;y++) {
         colorPlane[x][y][0] += 0.0095047/2.0;
         colorPlane[x][y][1] += 0.0100000/2.0;
         colorPlane[x][y][2] += 0.0108883/2.0;
@@ -438,8 +333,7 @@ void keyPressed()
   
 }
 
-void updateLines()
-{
+void updateLines() {
   lx1 += ldx1;
   ly1 += ldy1;
   lx2 += ldx2;
@@ -449,8 +343,7 @@ void updateLines()
   rx2 += rdx2;
   ry2 += rdy2;
   
-  if (lx1 < 0)
-  {
+  if (lx1 < 0) {
     lx1 = -lx1;
     ldx1 = -ldx1;
   }
@@ -461,14 +354,12 @@ void updateLines()
     ldx2 = -ldx2;
   }
   
-  if (ly1 < 0)
-  {
+  if (ly1 < 0) {
     ly1 = -ly1;
     ldy1 = -ldy1;
   }
   
-  if (ly2 < 0)
-  {
+  if (ly2 < 0) {
     ly2 = -ly2;
     ldy2 = -ldy2;
   }
@@ -479,38 +370,32 @@ void updateLines()
     rdx1 = -rdx1;
   }
   
-  if (rx2 < 0)
-  {
+  if (rx2 < 0) {
     rx2 = -rx2;
     rdx2 = -rdx2;
   }
   
-  if (ry1 < 0)
-  {
+  if (ry1 < 0) {
     ry1 = -ry1;
     rdy1 = -rdy1;
   }
   
-  if (ry2 < 0)
-  {
+  if (ry2 < 0) {
     ry2 = -ry2;
     rdy2 = -rdy2;
   }
   
-  if (lx1 > 255)
-  {
+  if (lx1 > 255) {
     lx1 = 510-lx1;
     ldx1 = -ldx1;
   }
   
-  if (lx2 > 255)
-  {
+  if (lx2 > 255) {
     lx2 = 510-lx2;
     ldx2 = -ldx2;
   }
   
-  if (ly1 > 255)
-  {
+  if (ly1 > 255) {
     ly1 = 510-ly1;
     ldy1 = -ldy1;
   }
@@ -521,26 +406,22 @@ void updateLines()
     ldy2 = -ldy2;
   }
   
-  if (rx1 > 255)
-  {
+  if (rx1 > 255) {
     rx1 = 510-rx1;
     rdx1 = -rdx1;
   }
   
-  if (rx2 > 255)
-  {
+  if (rx2 > 255) {
     rx2 = 510-rx2;
     rdx2 = -rdx2;
   }
   
-  if (ry1 > 255)
-  {
+  if (ry1 > 255) {
     ry1 = 510-ry1;
     rdy1 = -rdy1;
   }
   
-  if (ry2 > 255)
-  {
+  if (ry2 > 255) {
     ry2 = 510-ry2;
     rdy2 = -rdy2;
   }
@@ -556,42 +437,37 @@ void updateLines()
   rdy2 += (random(10) - random(10))*0.005;
   
   //Keep travel speeds sane.
-  if(sqrt(ldx1*ldx1+ldy1*ldy1) > 2.0)
-  {
+  if(sqrt(ldx1*ldx1+ldy1*ldy1) > 2.0) {
     ldx1 *= 0.95;
     ldy1 *= 0.95;
   }
   
-  if(sqrt(ldx2*ldx2+ldy2*ldy2) > 2.0)
-  {
+  if(sqrt(ldx2*ldx2+ldy2*ldy2) > 2.0) {
     ldx2 *= 0.95;
     ldy2 *= 0.95;
   }
   
-  if(sqrt(rdx1*rdx1+rdy1*rdy1) > 2.0)
-  {
+  if(sqrt(rdx1*rdx1+rdy1*rdy1) > 2.0) {
     rdx1 *= 0.95;
     rdy1 *= 0.95;
   }
   
-  if(sqrt(rdx2*rdx2+rdy2*rdy2) > 2.0)
-  {
+  if(sqrt(rdx2*rdx2+rdy2*rdy2) > 2.0) {
     rdx2 *= 0.95;
     rdy2 *= 0.95;
   }
 }
 
 
-void spectrumThread()
-{
-  int x, y, m;
+void spectrumThread() {
+  int x, y;
   int yo = (height - 50 - yPix)/2;
   int xo = (width - xPix)/2;
 
   int j;
   
-  float       lspectrum[] = new float[283];
-  float       rspectrum[] = new float[283];
+  float lspectrum[] = new float[283];
+  float rspectrum[] = new float[283];
   
   bandFocus = 1.50;
   intensity = 0.55;
@@ -628,13 +504,11 @@ void spectrumThread()
     return;
   
   
-  while( myFFT != null && lineIn != null)
-  {
+  while( myFFT != null && lineIn != null) {
     
      frameBuffer.loadPixels();
   
-     for(y=0;y<yPix;y++)
-     {
+     for(y=0;y<yPix;y++) {
        for(x=0;x<xPix;x++)
        {   
          frameBuffer.pixels[width*(yo+y) + xo+x] = PlanePixel((deltaMap[x][y][0]), (deltaMap[x][y][1]));
