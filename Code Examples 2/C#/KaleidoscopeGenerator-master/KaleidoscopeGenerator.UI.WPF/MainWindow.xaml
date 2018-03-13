@@ -1,0 +1,146 @@
+﻿<Window x:Class="KaleidoscopeGenerator.UI.WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:imaging="clr-namespace:KaleidoscopeGenerator.UI.WPF.Imaging"
+        xmlns:madia3d="clr-namespace:KaleidoscopeGenerator.UI.WPF.Media3D"
+        xmlns:models="clr-namespace:KaleidoscopeGenerator.UI.WPF.ViewModel"
+        Title="Kaleidoscope Simulator"  WindowStartupLocation="CenterScreen" Width="1200" Height="800" >
+  <Window.Resources>
+
+    <DataTemplate x:Key="2DTemplate" DataType="{x:Type models:AppModel}">
+      <imaging:Viewport2D ClipToBounds="True" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="3DTemplate" DataType="{x:Type models:AppModel}">
+      <madia3d:Vieport3DExt ClipToBounds="True" />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type models:AppModel}">
+      <ContentControl Content="{Binding }">
+        <ContentControl.Style>
+          <Style TargetType="{x:Type ContentControl}">
+            <Setter Property="ContentTemplate" Value="{StaticResource 2DTemplate}" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding Renderer.RendererType}" Value="3D">
+                <Setter Property="ContentTemplate" Value="{StaticResource 3DTemplate}" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </ContentControl.Style>
+      </ContentControl>
+    </DataTemplate>
+
+    <!-- Global TextBlock style -->
+    <Style TargetType="TextBlock" >
+      <Setter Property="FontSize" Value="16"/>
+    </Style>
+    <!-- Global Button style -->
+    <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" >
+      <Setter Property="Background" Value="LightGray"/>
+      <Setter Property="Padding" Value="10, 5"/>
+    </Style>
+    <!-- Global ComboBox style -->
+    <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}">
+      <Setter Property="Background" Value="LightGray"/>
+      <Setter Property="Padding" Value="10, 0"/>
+    </Style>
+    <!-- Global TextBox style -->
+    <Style TargetType="TextBox" BasedOn="{StaticResource {x:Static ToolBar.TextBoxStyleKey}}">
+      <Setter Property="Background" Value="LightGray"/>
+      <Setter Property="Padding" Value="10, 0"/>
+    </Style>
+    <!-- Property group style -->
+    <Style x:Key="PropertyGroup" TargetType="Border">
+      <Setter Property="Margin" Value="5"/>
+      <Setter Property="Padding" Value="5,10"/>
+      <Setter Property="Background" Value="White"/>
+    </Style>
+    <!-- Title TextBlock style -->
+    <Style x:Key="TitleText" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}" >
+      <Setter Property="FontSize" Value="20"/>
+    </Style>
+    <!-- Spacer for controls -->
+    <Style x:Key="Spacer" TargetType="Separator" >
+      <Setter Property="Opacity" Value="0"/>
+      <Setter Property="Height" Value="20"/>
+    </Style>
+    
+  </Window.Resources>
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="300"/>
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+    <Border BorderBrush="Black" BorderThickness="0,0,1,0" Grid.Column="0">
+      <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Background="LightGray">
+        <!-- Rendering options -->
+        <Border Style="{StaticResource PropertyGroup}">
+          <StackPanel>
+            <TextBlock Text="Rendering" Style="{StaticResource TitleText}" />
+            <Separator />
+            <Separator Style="{StaticResource Spacer}"/>
+            <TextBlock Text="{Binding Renderer.RendererType, Mode=OneWay, StringFormat='Currently rendering in {0}'}" />
+            <Separator Style="{StaticResource Spacer}"/>
+            <Button Content="{Binding Renderer.RendererTypeOther, Mode=OneWay}" ContentStringFormat="Switch to {0}"
+                    HorizontalAlignment="Left" Click="OnClickSwitchRenderer" />
+          </StackPanel>
+        </Border>
+        <!-- Settings options -->
+        <Border Style="{StaticResource PropertyGroup}">
+          <StackPanel>
+            <TextBlock Text="Settings" Style="{StaticResource TitleText}" />
+            <Separator />
+            <Separator Style="{StaticResource Spacer}"/>
+            <Grid>
+              <TextBlock Text="Number of mirrors:" />
+              <ComboBox ItemsSource="{Binding Settings.AvailableKaleidoscopeTypes}" HorizontalAlignment="Right"
+                        SelectedItem="{Binding Settings.SelectedKaleidoscopeType}" DisplayMemberPath="Name" />
+            </Grid>
+            <Separator Style="{StaticResource Spacer}"/>
+            <Grid>
+              <TextBlock>
+                <TextBlock.Text>
+                  <MultiBinding StringFormat="{}Mirror size [{0}-{1}]:" Mode="OneWay">
+                    <Binding Path="Settings.MinGeometryWidth" />
+                    <Binding Path="Settings.MaxGeometryWidth" />
+                  </MultiBinding>
+                </TextBlock.Text>
+              </TextBlock>
+              <TextBox HorizontalAlignment="Right">
+                <TextBox.Text>
+                  <Binding Path="Settings.GeometryWidth" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                      <ExceptionValidationRule />
+                    </Binding.ValidationRules>
+                  </Binding>
+                </TextBox.Text>
+              </TextBox>
+            </Grid>
+            <Separator Style="{StaticResource Spacer}"/>
+            <Grid>
+              <TextBlock Text="Image:" />
+              <Button Content="Choose" Click="OnClickSelectImage" HorizontalAlignment="Right"/>
+            </Grid>
+            <Separator Style="{StaticResource Spacer}"/>
+            <Image Width="200" Source="{Binding Settings.ImagePath}" />
+            <Separator Style="{StaticResource Spacer}"/>
+          </StackPanel>
+      </Border>
+        <!-- Other options -->
+        <Border Style="{StaticResource PropertyGroup}">
+          <StackPanel>
+            <TextBlock Text="Other" Style="{StaticResource TitleText}" />
+            <Separator />
+            <Separator Style="{StaticResource Spacer}"/>
+            <Button Content="Save settings" Click="OnClickSaveSettings" HorizontalAlignment="Left"/>
+            <Separator Style="{StaticResource Spacer}"/>
+            <Button Content="Load settings" Click="OnClickLoadSettings" HorizontalAlignment="Left"/>
+          </StackPanel>
+        </Border>
+      </StackPanel>
+      </ScrollViewer>
+    </Border>
+    <ContentControl Content="{Binding }" Grid.Column="1" />
+  </Grid>
+</Window>
