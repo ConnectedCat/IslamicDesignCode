@@ -1,6 +1,6 @@
 float cR = 100; // circle Radius
 float midSideR; // radius of a circle touching the middles of sides
-int numberOfVerts = 5;
+int numberOfVerts = 6;
 
 float radianStep = TWO_PI/numberOfVerts; //angle in radians
 PShape shape;

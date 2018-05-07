@@ -16,7 +16,7 @@ void draw(){
   for (int i = 0; i < shapes.size(); i++) {
     SymmetricalShape shape = shapes.get(i);
     shape.display();
-    shape.displayRelatedCentersThroughSides();
+    //shape.displayRelatedCentersThroughSides();
   }
   
   fill(0);
