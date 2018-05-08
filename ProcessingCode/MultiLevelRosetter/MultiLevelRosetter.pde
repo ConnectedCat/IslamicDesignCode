@@ -1,9 +1,17 @@
+import processing.io.*;
+MCP3008 adc;
+
+float[] pots = new float[4];
+float[] prevPots = new float[4];
+
+float tolerance = 0.03;
+
 ArrayList<PVector[]> levels = new ArrayList<PVector[]>();
 
 PVector centerPoint;
 
-int WIDTH = 1000;
-int HEIGHT = 1000;
+int WIDTH = 500;
+int HEIGHT = 500;
 
 float circleDiameter = 200;
 float circleRadius = circleDiameter/2;
@@ -11,11 +19,17 @@ float dotRadius = 5;
 int numberOfRadiusPoints = 7;
 
 int totalPoints = 0;
-int numberOfLevels = 4;
+int numberOfLevels = 3;
 float angleInRadians = TWO_PI/numberOfRadiusPoints;
+
+color from = color(255, 0, 0);
+color to = color(0, 0, 255);
+
+color mainColor, backgroundColor;
 
 void settings(){
   size(WIDTH, HEIGHT);
+  adc = new MCP3008(SPI.list()[0]);
 }
 
 void setup(){
@@ -26,9 +40,6 @@ void setup(){
   for(int i = 0; i <= numberOfLevels; i++){
     PVector[] currentLevel = levels.get(i);
     PVector[] previousLevel = (i != 0) ? levels.get(i-1) : new PVector[0];
-    println(i);
-    println("Current Level Size: " + currentLevel.length);
-    println("Previous Level Size: " + previousLevel.length);
     
     for(int j = 0; j < currentLevel.length; j++){
       if(i != 0){
@@ -43,36 +54,35 @@ void setup(){
       totalPoints++;
     }
   }
-
-  fill(0);
-  text("Number of Levels: " + levels.size(), 10, height - 30);
-  text("Number of points: " + totalPoints, 10, height - 10);
 }
 
 void draw(){
-  background(15, 175, 175);
+  println("Frame rate: " + frameRate);
+  background(lerpColor(from, to, prevPots[3]));
+  
+  for(int i = 0; i < pots.length; i++){
+    pots[i] = adc.getAnalog(i);
+    
+    println(pots[i]);
+    
+    if(abs(pots[i] - prevPots[i]) > tolerance ){
+      prevPots[i] = pots[i];
+    }
+  }
   
   for(int i = 0; i <= numberOfLevels; i++){
     if(i == levels.size() - 1){
       PVector[] currentLevel = levels.get(i);
-      PVector[] previousLevel = (i != 0) ? levels.get(i-1) : new PVector[0];
       
       for(int j = 0; j < currentLevel.length; j++){
-        if(i != 0){
-          centerPoint = previousLevel[floor(j/numberOfRadiusPoints)];
-          float pointX = centerPoint.x + cos(angleInRadians*j)*circleRadius;
-          float pointY = centerPoint.y + sin(angleInRadians*j)*circleRadius;
-          currentLevel[j] = new PVector(pointX, pointY);
-        }
-        else{
-          currentLevel[j] = new PVector(width/2, height/2);
-        }
-
-        stroke(255);
+        circleDiameter = map(prevPots[0], 0, 1, 50, 250);
+        
+        mainColor = color(255*prevPots[3], 255*prevPots[2], 255*prevPots[1]);
+        
+        stroke(mainColor);
         noFill();
         ellipse(currentLevel[j].x, currentLevel[j].y, circleDiameter, circleDiameter);
-        
-        fill(255, 0, 0);
+        fill(mainColor);
         noStroke();
         
         int halfPoint = numberOfRadiusPoints/2;
