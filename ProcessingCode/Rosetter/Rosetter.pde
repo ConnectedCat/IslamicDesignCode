@@ -1,7 +1,5 @@
 PVector centerPoint, circumPoint;
 
-
-
 int WIDTH = 1000;
 int HEIGHT = 1000;
 
@@ -9,7 +7,7 @@ float circleDiameter = 200;
 float circleRadius = circleDiameter/2;
 float dotDiameter = 5;
 
-int numberOfRadiusPoints = 6;
+int numberOfRadiusPoints = 8;
 float angleInRads = TWO_PI/numberOfRadiusPoints;
 
 PVector[] circumPoints = new PVector[numberOfRadiusPoints];
@@ -28,19 +26,26 @@ void setup(){
     float pointX = centerPoint.x + cos(angleInRads*i)*circleRadius;
     float pointY = centerPoint.y + sin(angleInRads*i)*circleRadius;
     
+    noFill();
+    stroke(255, 255, 0);
+    
     ellipse(pointX, pointY, circleDiameter, circleDiameter);
     circumPoints[i] = new PVector(pointX, pointY);
-  }
+    
+    fill(255, 0, 0);
+    noStroke();
   
-  fill(255, 0, 0);
-  noStroke();
-  
-  
-  ellipse(centerPoint.x, centerPoint.y, dotDiameter, dotDiameter);
-  
-  for(int i = 0; i < numberOfRadiusPoints; i++){
-    //ellipse(circumPoints[i].x, circumPoints[i].y, dotDiameter, dotDiameter);
-    arc(circumPoints[i].x, circumPoints[i].y, circleDiameter, circleDiameter, -angleInRads*(numberOfRadiusPoints-3-i), -angleInRads*(numberOfRadiusPoints-3-i)+angleInRads, CHORD);
-    arc(circumPoints[i].x, circumPoints[i].y, circleDiameter, circleDiameter, -angleInRads*(numberOfRadiusPoints-2-i), -angleInRads*(numberOfRadiusPoints-2-i)+angleInRads, CHORD);
+    int halfPoint = numberOfRadiusPoints/2;
+
+    float startAngle = -angleInRads*(numberOfRadiusPoints-halfPoint-i);
+    float stopAngle = -angleInRads*(numberOfRadiusPoints-halfPoint-i)+angleInRads;
+    
+    arc(circumPoints[i].x, circumPoints[i].y, circleDiameter, circleDiameter, startAngle, stopAngle, CHORD);
+    
+    if(numberOfRadiusPoints % 2 == 0){
+      startAngle = -angleInRads*(numberOfRadiusPoints-halfPoint+1-i);
+      stopAngle = -angleInRads*(numberOfRadiusPoints-halfPoint+1-i)+angleInRads;
+      arc(circumPoints[i].x, circumPoints[i].y, circleDiameter, circleDiameter, startAngle, stopAngle, CHORD);
+    }
   }
 }

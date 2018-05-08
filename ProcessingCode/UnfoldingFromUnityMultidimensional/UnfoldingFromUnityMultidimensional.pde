@@ -29,7 +29,7 @@ void setup(){
 
   }
   
-  for(int i = 0; i<= numberOfLevels; i++){
+  for(int i = 0; i <= numberOfLevels; i++){
     PVector[] currentLevel = levels.get(i);
     PVector[] previousLevel = (i != 0) ? levels.get(i-1) : new PVector[0];
     println(i);
@@ -47,9 +47,9 @@ void setup(){
         currentLevel[j] = new PVector(width/2, height/2);
       }
       
-      noStroke();
-      fill(255, 0, 0);
-      ellipse(currentLevel[j].x, currentLevel[j].y, dotRadius, dotRadius);
+      //noStroke();
+      //fill(255, 0, 0);
+      //ellipse(currentLevel[j].x, currentLevel[j].y, dotRadius, dotRadius);
       
       stroke(255);
       if( i%2 == 0){ // only the even levels
