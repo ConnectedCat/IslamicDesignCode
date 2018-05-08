@@ -10,13 +10,13 @@ ArrayList<PVector[]> levels = new ArrayList<PVector[]>();
 
 PVector centerPoint;
 
-int WIDTH = 500;
-int HEIGHT = 500;
+int WIDTH = 1000;
+int HEIGHT = 1000;
 
 float circleDiameter = 200;
 float circleRadius = circleDiameter/2;
 float dotRadius = 5;
-int numberOfRadiusPoints = 7;
+int numberOfRadiusPoints = 4;
 
 int totalPoints = 0;
 int numberOfLevels = 3;
