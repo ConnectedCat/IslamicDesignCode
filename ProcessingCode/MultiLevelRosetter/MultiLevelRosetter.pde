@@ -1,10 +1,10 @@
 import processing.io.*;
 MCP3008 adc;
 
-float[] pots = new float[4];
-float[] prevPots = new float[4];
+float[] pots = new float[8];
+float[] prevPots = new float[8];
 
-float tolerance = 0.03;
+float tolerance = 0.01;
 
 ArrayList<PVector[]> levels = new ArrayList<PVector[]>();
 
@@ -16,16 +16,18 @@ int HEIGHT = 1000;
 float circleDiameter = 200;
 float circleRadius = circleDiameter/2;
 float dotRadius = 5;
-int numberOfRadiusPoints = 4;
+int numberOfRadiusPoints = 7;
 
 int totalPoints = 0;
 int numberOfLevels = 3;
 float angleInRadians = TWO_PI/numberOfRadiusPoints;
 
-color from = color(255, 0, 0);
-color to = color(0, 0, 255);
+color bFrom = color(255, 255, 0);
+color bTo = color(0, 255, 255);
 
 color mainColor, backgroundColor;
+
+
 
 void settings(){
   size(WIDTH, HEIGHT);
@@ -33,6 +35,7 @@ void settings(){
 }
 
 void setup(){
+  colorMode(HSB, 255);
   for(int i = 0; i <= numberOfLevels; i++){
     levels.add(new PVector[ int(pow(numberOfRadiusPoints, i)) ]);
   }
@@ -58,7 +61,7 @@ void setup(){
 
 void draw(){
   println("Frame rate: " + frameRate);
-  background(lerpColor(from, to, prevPots[3]));
+  background(lerpColor(bFrom, bTo, prevPots[0]));
   
   for(int i = 0; i < pots.length; i++){
     pots[i] = adc.getAnalog(i);
@@ -75,7 +78,7 @@ void draw(){
       PVector[] currentLevel = levels.get(i);
       
       for(int j = 0; j < currentLevel.length; j++){
-        circleDiameter = map(prevPots[0], 0, 1, 50, 250);
+        circleDiameter = map(prevPots[4], 0, 1, 50, 250);
         
         mainColor = color(255*prevPots[3], 255*prevPots[2], 255*prevPots[1]);
         
