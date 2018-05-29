@@ -1,8 +1,27 @@
-import processing.io.*;
+import processing.core.*; 
+import processing.data.*; 
+import processing.event.*; 
+import processing.opengl.*; 
+
+import processing.io.*; 
+import processing.io.SPI; 
+
+import java.util.HashMap; 
+import java.util.ArrayList; 
+import java.io.File; 
+import java.io.BufferedReader; 
+import java.io.PrintWriter; 
+import java.io.InputStream; 
+import java.io.OutputStream; 
+import java.io.IOException; 
+
+public class Basri_withRecalc extends PApplet {
+
+
 MCP3008 adc;
 
 float[] pots = new float[8];
-float tolerance = 0.01;
+float tolerance = 0.01f;
 
 ArrayList<PVector[]> levels = new ArrayList<PVector[]>();
 
@@ -23,19 +42,19 @@ int numberOfRadiusPoints = 4;
 int numberOfLevels = 3;
 float angleInRadians = TWO_PI/numberOfRadiusPoints;
 
-color mainColor, backgroundColor;
+int mainColor, backgroundColor;
 
-void settings() {
+public void settings() {
   size(WIDTH, HEIGHT);
   adc = new MCP3008(SPI.list()[0]);
 }
 
-void setup() {
+public void setup() {
   colorMode(HSB, TWO_PI, 100, 100, 100);  
   calcTheLevels();
 }
 
-void draw() {
+public void draw() {
   PVector[] currentLevel = levels.get(levels.size() - 1);
   
   readPotValues();
@@ -88,10 +107,10 @@ void draw() {
 //
 //
 
-void calcTheLevels() {
+public void calcTheLevels() {
   levels.clear();
   for (int i = 0; i <= numberOfLevels; i++) {
-    levels.add(new PVector[ int(pow(numberOfRadiusPoints, i)) ]);
+    levels.add(new PVector[ PApplet.parseInt(pow(numberOfRadiusPoints, i)) ]);
   }
 
   for (int i = 0; i <= numberOfLevels; i++) {
@@ -119,7 +138,7 @@ void calcTheLevels() {
   minDiameter = PVector.dist(zeroPoint, anglePoint) + (archHeight);
 }
 
-void readPotValues() {
+public void readPotValues() {
   for (int i = 0; i < pots.length; i++) {
     float potVal = adc.getAnalog(i);
 
@@ -134,6 +153,42 @@ void readPotValues() {
       if (abs(potVal - pots[i]) > tolerance ) {
         pots[i] = potVal;
       }
+    }
+  }
+}
+
+
+// MCP3008 is a Analog-to-Digital converter using SPI
+// other than the MCP3001, this has 8 input channels
+// datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21295d.pdf
+
+class MCP3008 extends SPI {
+
+  MCP3008(String dev) {
+    super(dev);
+    settings(500000, SPI.MSBFIRST, SPI.MODE0);
+  }
+
+  public float getAnalog(int channel) {
+    if (channel < 0 ||  7 < channel) {
+      System.err.println("The channel needs to be from 0 to 7");
+      throw new IllegalArgumentException("Unexpected channel");
+    }
+    byte[] out = { 0, 0, 0 };
+    // encode the channel number in the first byte
+    out[0] = (byte)(0x18 | channel);
+    byte[] in = super.transfer(out);
+    int val = ((in[1] & 0x3f) << 4 ) | ((in[2] & 0xf0) >> 4 );
+    // val is between 0 and 1023
+    return PApplet.parseFloat(val)/1023.0f;
+  }
+}
+  static public void main(String[] passedArgs) {
+    String[] appletArgs = new String[] { "--present", "--window-color=#666666", "--hide-stop", "Basri_withRecalc" };
+    if (passedArgs != null) {
+      PApplet.main(concat(appletArgs, passedArgs));
+    } else {
+      PApplet.main(appletArgs);
     }
   }
 }
