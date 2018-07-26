@@ -17,7 +17,7 @@ float maxDiameter = 250;
 float circleRadius = circleDiameter/2;
 
 int minNumRadPoints = 4;
-int maxNumRadPoints = 12;
+int maxNumRadPoints = 9;
 int numberOfRadiusPoints = 4;
 
 int numberOfLevels = 3;
@@ -41,7 +41,7 @@ void draw() {
   readPotValues();
   
   mainColor = color(TWO_PI*pots[2], 100*pots[1], 100*pots[0]);
-  backgroundColor = color(TWO_PI*pots[6], 100*pots[7], map(pots[0], 1, 0, 0, 100), 100*pots[5]);
+  backgroundColor = color(TWO_PI*pots[6], 100*pots[7], map(pots[0], 1, 0, 0, 100), map(pots[5], 0, 1, 30, 100));
   
   noStroke();
   fill(backgroundColor);
