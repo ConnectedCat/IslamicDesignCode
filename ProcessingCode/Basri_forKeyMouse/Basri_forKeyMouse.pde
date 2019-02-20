@@ -1,27 +1,17 @@
-import processing.core.*; 
-import processing.data.*; 
-import processing.event.*; 
-import processing.opengl.*; 
-
-import processing.io.*; 
-import processing.io.SPI; 
-
-import java.util.HashMap; 
-import java.util.ArrayList; 
-import java.io.File; 
-import java.io.BufferedReader; 
-import java.io.PrintWriter; 
-import java.io.InputStream; 
-import java.io.OutputStream; 
-import java.io.IOException; 
-
-public class Basri_withRecalc extends PApplet {
-
-
-MCP3008 adc;
-
 float[] pots = new float[8];
-float tolerance = 0.01f;
+/*
+* POTs Values are as follows:
+* 0. Main color / Backgound color brightness
+* 1. Main color saturation
+* 2. Main color hue
+* 3. Number of point on the circle
+* 4. Circle Diameter
+* 5. Backgound color opacity
+* 6. Backgound color hue
+* 7. Backgound color saturation
+*
+*/
+float increment = 0.05;
 
 ArrayList<PVector[]> levels = new ArrayList<PVector[]>();
 
@@ -42,22 +32,29 @@ int numberOfRadiusPoints = 4;
 int numberOfLevels = 3;
 float angleInRadians = TWO_PI/numberOfRadiusPoints;
 
-int mainColor, backgroundColor;
+color mainColor, backgroundColor;
 
-public void settings() {
+void settings() {
   size(WIDTH, HEIGHT);
-  adc = new MCP3008(SPI.list()[0]);
 }
 
-public void setup() {
-  colorMode(HSB, TWO_PI, 100, 100, 100);  
+void setup() {
+  colorMode(HSB, TWO_PI, 100, 100, 100);
+  
+  pots[0] = 0.5;
+  pots[1] = 0.5;
+  pots[2] = 0.5;
+  pots[3] = 0.5;
+  pots[4] = 0.5;
+  pots[5] = 0.5;
+  pots[6] = 0.5;
+  pots[7] = 0.5;
+  
   calcTheLevels();
 }
 
-public void draw() {
+void draw() {
   PVector[] currentLevel = levels.get(levels.size() - 1);
-  
-  readPotValues();
   
   mainColor = color(TWO_PI*pots[2], 100*pots[1], 100*pots[0]);
   backgroundColor = color(TWO_PI*pots[6], 100*pots[7], map(pots[0], 1, 0, 0, 100), map(pots[5], 0, 1, 30, 100));
@@ -107,10 +104,10 @@ public void draw() {
 //
 //
 
-public void calcTheLevels() {
+void calcTheLevels() {
   levels.clear();
   for (int i = 0; i <= numberOfLevels; i++) {
-    levels.add(new PVector[ PApplet.parseInt(pow(numberOfRadiusPoints, i)) ]);
+    levels.add(new PVector[ int(pow(numberOfRadiusPoints, i)) ]);
   }
 
   for (int i = 0; i <= numberOfLevels; i++) {
@@ -138,57 +135,61 @@ public void calcTheLevels() {
   minDiameter = PVector.dist(zeroPoint, anglePoint) + (archHeight);
 }
 
-public void readPotValues() {
-  for (int i = 0; i < pots.length; i++) {
-    float potVal = adc.getAnalog(i);
-
-    if (i==3 ) {
-      if (abs(potVal - pots[3]) > (float)1/(maxNumRadPoints-minNumRadPoints)) {
-        pots[3] = potVal;
-        numberOfRadiusPoints = round(map(pots[3], 1, 0, minNumRadPoints, maxNumRadPoints));
-        angleInRadians = TWO_PI/numberOfRadiusPoints;
-        thread("calcTheLevels");
-      }
-    } else {
-      if (abs(potVal - pots[i]) > tolerance ) {
-        pots[i] = potVal;
-      }
-    }
-  }
-}
-
-
-// MCP3008 is a Analog-to-Digital converter using SPI
-// other than the MCP3001, this has 8 input channels
-// datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/21295d.pdf
-
-class MCP3008 extends SPI {
-
-  MCP3008(String dev) {
-    super(dev);
-    settings(500000, SPI.MSBFIRST, SPI.MODE0);
-  }
-
-  public float getAnalog(int channel) {
-    if (channel < 0 ||  7 < channel) {
-      System.err.println("The channel needs to be from 0 to 7");
-      throw new IllegalArgumentException("Unexpected channel");
-    }
-    byte[] out = { 0, 0, 0 };
-    // encode the channel number in the first byte
-    out[0] = (byte)(0x18 | channel);
-    byte[] in = super.transfer(out);
-    int val = ((in[1] & 0x3f) << 4 ) | ((in[2] & 0xf0) >> 4 );
-    // val is between 0 and 1023
-    return PApplet.parseFloat(val)/1023.0f;
-  }
-}
-  static public void main(String[] passedArgs) {
-    String[] appletArgs = new String[] { "--present", "--window-color=#666666", "--hide-stop", "Basri_withRecalc" };
-    if (passedArgs != null) {
-      PApplet.main(concat(appletArgs, passedArgs));
-    } else {
-      PApplet.main(appletArgs);
-    }
+void keyReleased(){
+  switch(key){
+    case 'q':
+      if(pots[0] < 1) pots[0] = pots[0]+increment;
+      break;
+    case 'a':
+      if(pots[0] > 0) pots[0] = pots[0]-increment;
+      break;
+    case 'w':
+      if(pots[1] < 1) pots[1] = pots[1]+increment;
+      break;
+    case 's':
+      if(pots[1] > 0) pots[1] = pots[1]-increment;
+      break;
+    case 'e':
+      if(pots[2] < 1) pots[2] = pots[2]+increment;
+      break;
+    case 'd':
+      if(pots[2] > 0) pots[2] = pots[2]-increment;
+      break;
+    case 'r':
+      if(pots[3] < 1) pots[3] = pots[3]+increment;
+      numberOfRadiusPoints = round(map(pots[3], 1, 0, minNumRadPoints, maxNumRadPoints));
+      angleInRadians = TWO_PI/numberOfRadiusPoints;
+      thread("calcTheLevels");
+      break;
+    case 'f':
+      if(pots[3] > 0) pots[3] = pots[3]-increment;
+      numberOfRadiusPoints = round(map(pots[3], 1, 0, minNumRadPoints, maxNumRadPoints));
+      angleInRadians = TWO_PI/numberOfRadiusPoints;
+      thread("calcTheLevels");
+      break;
+    case 't':
+      if(pots[4] < 1) pots[4] = pots[4]+increment;
+      break;
+    case 'g':
+      if(pots[4] > 0) pots[4] = pots[4]-increment;
+      break;
+    case 'y':
+      if(pots[5] < 1) pots[5] = pots[5]+increment;
+      break;
+    case 'h':
+      if(pots[5] > 0) pots[5] = pots[5]-increment;
+      break;
+    case 'u':
+      if(pots[6] < 1) pots[6] = pots[6]+increment;
+      break;
+    case 'j':
+      if(pots[6] > 0) pots[6] = pots[6]-increment;
+      break;
+    case 'i':
+      if(pots[7] < 1) pots[7] = pots[7]+increment;
+      break;
+    case 'k':
+      if(pots[7] > 0) pots[7] = pots[7]-increment;
+      break;
   }
 }
